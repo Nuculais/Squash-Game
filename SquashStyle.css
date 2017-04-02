@@ -1,0 +1,38 @@
+* { 
+	padding: 0; 
+	margin: 0; 
+}
+
+canvas { 
+  background: #eee; 
+  display: block; 
+  margin: 0 auto; 
+  border-radius: 15px;
+  box-shadow: 10px 10px 8px rgb(125, 0, 125);
+}
+
+body {
+height: 100%;
+margin: 0;
+background: blue;
+background-repeat: no-repeat;
+background-attachment: fixed;
+background: repeating-radial-gradient(circle, rgb(153,0,153), rgb(179,0,179), rgb(255,0,255) 15%, rgb(179,0,179) 25%);
+background: -moz-repeating-radial-gradient(circle, rgb(153,0,153), rgb(179,0,179), rgb(214,0,214) 15%, rgb(153,0,153) 25%);
+background: -webkit-repeating-radial-gradient(circle, rgb(153,0,153), rgb(179,0,179), rgb(214,0,214) 15%, rgb(153,0,153) 25%);
+background: -0-repeating-radial-gradient(circle, rgb(153,0,153), rgb(179,0,179), rgb(214,0,214) 15%, rgb(153,0,153) 25%);
+}
+
+#wrapper {
+height: 100%;
+width: 100%;
+top: 0%;
+position: absolute;
+display: inline;
+}
+
+#container{
+display:inline;
+top: 25%;
+position: relative;
+}

@@ -1,0 +1,235 @@
+<!DOCTYP html>
+<html>
+	<head>
+		<title>Squash Game</title>
+		<meta charset= "utf-8" />
+		<link rel='stylesheet' href='breakoutStyle.css'>		
+	</head>
+		<body>
+		<div id='wrapper'>
+			<div id='container'>
+				<canvas id='Canvasen' width='480' height='320'></canvas>
+			</div>
+		</div>
+			<script>
+				var canvas = document.getElementById('Canvasen');
+				var ctx = canvas.getContext('2d');
+				var x = canvas.width/2;
+				var y = canvas.height-30;
+				var dx = 2;
+				var dy = -2;	
+				var pressLeft = false;
+				var pressRight = false;				
+				var points = 0;	
+				var lives = 3;
+
+				//Paddle
+				var paddleH = 10;
+				var paddleW = 80;
+				var paddleX = (canvas.width-paddleW)/2;	
+				
+				//Ball
+				var ballColour = 'black';				
+				var ballRadius = 10;
+				var ballSpeed = 10;				
+				
+				//Bricks
+				var brickRows = 3;
+				var brickColumns = 5;
+				var brickW = 75;
+				var brickH = 20;
+				var brickPadding = 10;
+				var brickOffsetTop = 30;
+				var brickOffsetLeft = 30;
+				
+				var bricks = [];
+				for(c=0; c<brickColumns; c++) {
+					bricks[c] = [];
+				for(r=0; r<brickRows; r++) {
+					bricks[c][r] = { x: 0, y: 0, status: 1 };
+					}
+				}
+				
+				//Collision detection
+				function collision()
+				{
+					for(c=0; c<brickColumns; c++)
+					{	
+						for(r=0; r<brickRows; r++)
+						{
+							var b = bricks[c][r];
+							if(b.status == 1)
+							{
+								if(x > b.x && x < b.x+brickW && y > b.y && y < b.y+brickH)
+								{
+									dy = -dy;
+									b.status = 0;
+									colourChange();
+									points++;
+									
+									if(points == brickColumns*brickRows)
+									{
+										alert("You win the game!");
+										document.location.reload();
+									}
+								}
+							}
+						}
+					}
+				}
+			
+				//Changing colour when ball hits something
+				function colourChange()
+				{
+					var r = Math.floor(Math.random() * 256);
+					var g = Math.floor(Math.random() * 256);
+					var b = Math.floor(Math.random() * 256);
+
+					ballColour = 'rgb('+ r + ',' + g + ',' + b +')'; 
+				}
+								
+				
+				function drawBall(ballColour)
+				{
+					ctx.beginPath();
+					ctx.arc(x, y, ballRadius, 0, Math.PI*2);					
+					ctx.fillStyle = ballColour;
+					ctx.fill();
+					ctx.closePath();
+				}
+				
+				function drawPaddle()
+				{
+					ctx.beginPath();
+					ctx.rect(paddleX, canvas.height-paddleH, paddleW, paddleH);
+					ctx.fillStyle = 'black';
+					ctx.fill();
+					ctx.closePath();
+				}
+				
+				
+				function drawBricks() 
+				{
+					for(c=0; c<brickColumns; c++) 
+					{
+						for(r=0; r<brickRows; r++) 
+						{
+							if(bricks[c][r].status == 1)
+							{
+							var brickX = (c*(brickW+brickPadding))+brickOffsetLeft;
+							var brickY = (r*(brickH+brickPadding))+brickOffsetTop;
+						bricks[c][r].x = brickX;
+						bricks[c][r].y = brickY;
+						ctx.beginPath();
+						ctx.rect(brickX, brickY, brickW, brickH);
+						ctx.fillStyle = "black";
+						ctx.fill();
+						ctx.closePath();
+							}
+						}
+					}
+				}
+				
+				function drawPoints()
+				{
+					ctx.font = "14px Impact";
+					ctx.fillStyle = 'black';
+					ctx.fillText("Points: " + points, 15, 20);
+				}
+				
+				function drawLives()
+				{
+					ctx.font = "14px Impact";
+					ctx.fillStyle = 'black';
+					ctx.fillText("Lives left: " + lives, canvas.width-80, 20);
+				}
+				
+				function draw()
+				{
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					drawBall(ballColour);
+					drawPaddle();
+					drawBricks();
+					drawPoints();
+					drawLives();
+					collision();
+					
+					if(x + dx > canvas.width-ballRadius || x + dx < ballRadius)
+					{ dx = -dx; colourChange();	}
+					
+					if(y + dy < ballRadius)
+						{ dy = -dy; colourChange();}
+					
+					else if(y + dy > canvas.height-ballRadius)
+					{
+						if(x > paddleX && x < paddleX+paddleW)
+							{	dy = -dy; colourChange();}
+					else 
+					{											
+						lives--;
+						if(!lives)
+						{
+							alert("Game Over!");
+							document.location.reload();
+						}
+						else
+						{
+							x = canvas.width/2;
+							y = canvas.height-30;
+							dx = 3;
+							dy = -3;
+							paddleX = (canvas.width-paddleW)/2;
+						}
+					}
+				}
+										
+					if(pressRight && paddleX < canvas.width-paddleW)
+					{
+						paddleX += 8;
+					}
+					
+					else if(pressLeft && paddleX > 0)
+					{
+						paddleX -= 8;
+					}
+					
+					x += dx;
+					y += dy;
+					requestAnimationFrame(draw);
+				}
+					
+										
+					//Event listeners and key press functions
+					document.addEventListener("keydown", keyDownHandler, false);
+					document.addEventListener("keyup", keyUpHandler, false);			
+					
+					function keyDownHandler(e)
+					{
+						if(e.keyCode == 39)
+						{
+							pressRight = true;
+						}
+						else if(e.keyCode == 37)
+						{
+							pressLeft = true;
+						}					
+					}
+					
+					function keyUpHandler(e)
+					{
+						if(e.keyCode == 39)
+						{
+							pressRight = false;
+						}
+						else if(e.keyCode == 37)
+						{
+							pressLeft = false;
+						}
+					}	
+
+					draw();
+										
+					
+			</script>
+		</body>
+</html>
